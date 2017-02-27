@@ -8,4 +8,10 @@ public interface DataProvider
     void openConnection();
 
     void closeConnection();
+
+    enum ConnectionType
+    {
+
+        MYSQL, H2, MONGODB, CSV, JSON, XML
+    }
 }
