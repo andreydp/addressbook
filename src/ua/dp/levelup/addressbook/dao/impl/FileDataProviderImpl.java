@@ -1,8 +1,8 @@
-package com.levelup.dao.impl;
+package ua.dp.levelup.addressbook.dao.impl;
 
-import com.levelup.dao.DataProvider;
 
-import java.io.File;
+import ua.dp.levelup.addressbook.dao.DataProvider;
+
 import java.io.FileNotFoundException;
 import java.io.RandomAccessFile;
 import java.util.HashMap;
