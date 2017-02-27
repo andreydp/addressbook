@@ -1,5 +1,7 @@
 package ua.dp.levelup.addressbook.dao;
 
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.ArrayList;
 
 /**
@@ -7,9 +9,9 @@ import java.util.ArrayList;
  */
 public interface DAO<T>
 {
-    void create(T t);
+    void create(T t) throws FileNotFoundException;
 
-    ArrayList<T> read();
+    ArrayList<T> read() throws IOException;
 
     void update(T t);
 

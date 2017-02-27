@@ -3,6 +3,8 @@ package ua.dp.levelup.addressbook.dao;
 
 import ua.dp.levelup.addressbook.dao.impl.FileDataProvider;
 
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.util.ArrayList;
 
@@ -24,14 +26,23 @@ public abstract class AbstractCSVDAO<T> extends AbstractFileDAO<T>
     }
 
     @Override
-    public void create(final T t)
+    public void create(final T t) throws FileNotFoundException
     {
-        return;
+        this.getDataFile();
     }
 
-    public ArrayList<T> read()
+    public ArrayList<T> read() throws IOException
     {
         ArrayList<T> list = new ArrayList<T>();
+        RandomAccessFile file = this.getDataFile();
+
+        String line;
+        while ((line = file.readLine()) != null && !line.startsWith(HEADER_CSV))
+        {
+
+        }
+
+
         return list;
     }
 
