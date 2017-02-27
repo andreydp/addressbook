@@ -7,16 +7,15 @@ import java.awt.event.ActionListener;
 /**
  * Created by java on 10.01.2017.
  */
-public abstract class Dialog extends JDialog
-{
+public abstract class Dialog extends JDialog {
+
     protected JButton ok = null;
     protected JButton cancel = null;
     protected JPanel panel = new JPanel();
     private final ActionListener listener;
     private boolean isOkPressed = false;
 
-    public Dialog()
-    {
+    public Dialog() {
         setModal(true);
         setLayout(null);
         setBounds(300, 400, 250, 240);
@@ -36,33 +35,28 @@ public abstract class Dialog extends JDialog
         panel.add(cancel);
     }
 
-    public boolean isOkPressed()
-    {
+    public boolean isOkPressed() {
         boolean res = isOkPressed;
         isOkPressed = false;
         return res;
     }
 
-    public void setOkPressed(boolean okPressed)
-    {
+    public void setOkPressed(boolean okPressed) {
         isOkPressed = okPressed;
     }
 
     public abstract Object getEntity();
 
-    private JButton createActionButton(String name, Rectangle rectangle)
-    {
+    private JButton createActionButton(String name, Rectangle rectangle) {
         JButton btn = new JButton(name);
         btn.addActionListener(listener);
         btn.setBounds(rectangle);
         return btn;
     }
 
-    private ActionListener getButtonListener()
-    {
+    private ActionListener getButtonListener() {
         return e -> {
-            if (e.getActionCommand().equals("ok"))
-            {
+            if(e.getActionCommand().equals("ok")) {
                 isOkPressed = true;
             }
             dispose();
