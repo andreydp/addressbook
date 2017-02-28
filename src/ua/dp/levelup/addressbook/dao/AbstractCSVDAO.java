@@ -39,11 +39,11 @@ public abstract class AbstractCSVDAO<T> extends AbstractFileDAO<T>
 
     public ArrayList<T> read()
     {
-        ArrayList<T> list = new ArrayList<T>();
-        RandomAccessFile file = null;
+        ArrayList<T> list = null;
         try
         {
-            file = this.getDataFile();
+            list = new ArrayList<>();
+            RandomAccessFile file = this.getDataFile();
             for (String line; (line = file.readLine()) != null; )
             {
                 if (line.startsWith(this.HEADER_CSV)) continue;
