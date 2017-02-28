@@ -1,6 +1,7 @@
 package ua.dp.levelup.addressbook.dao;
 
 import ua.dp.levelup.addressbook.dao.impl.FileDataProvider;
+import ua.dp.levelup.addressbook.entity.Entity;
 
 import java.io.IOException;
 import java.io.RandomAccessFile;
@@ -9,7 +10,7 @@ import java.util.ArrayList;
 /**
  * Created by andrey on 27.02.17.
  */
-public abstract class AbstractCSVDAO<T> extends AbstractFileDAO<T>
+public abstract class AbstractCSVDAO<T extends Entity> extends AbstractFileDAO<T>
 {
     private final String HEADER_CSV;
 
@@ -76,17 +77,24 @@ public abstract class AbstractCSVDAO<T> extends AbstractFileDAO<T>
 
     protected abstract T parseEntity(final String str);
 
-    public int[] getStartAndEndOfStr(RandomAccessFile file, T t) throws IOException
+    public long[] getStartAndEndOfStr(RandomAccessFile file, T t)
     {
-        int[] result = new int[2];
-        String entityStr = viewEntity(t);
-        for (String line; (line = file.readLine()) != null; )
+        long[] result = new long[2];
+        try
         {
-            if (line.equals(entityStr))
+            file.seek(HEADER_CSV.length());
+            for (String line; (line = file.readLine()) != null; )
             {
-                result[0] = (int) file.getFilePointer() - line.length();
-                result[1] = (int) file.getFilePointer();
+                if (line.startsWith(t.getId() + ";"))
+                {
+                    result[0] =  file.getFilePointer() - line.length();
+                    result[1] =  file.getFilePointer();
+                    break;
+                }
             }
+        } catch (IOException e)
+        {
+            e.printStackTrace();
         }
         return result;
     }
