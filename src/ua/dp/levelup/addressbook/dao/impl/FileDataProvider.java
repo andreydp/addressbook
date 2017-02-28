@@ -3,8 +3,7 @@ package ua.dp.levelup.addressbook.dao.impl;
 
 import ua.dp.levelup.addressbook.dao.DataProvider;
 
-import java.io.File;
-import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.util.HashMap;
 import java.util.Map;
@@ -24,14 +23,14 @@ public class FileDataProvider implements DataProvider
         this.directoryPath = directoryPath;
     }
 
-    public RandomAccessFile getDataFile(String fileName) throws FileNotFoundException
+    public RandomAccessFile getDataFile(String fileName) throws IOException
     {
         if (dataMap.containsKey(fileName))
         {
             return dataMap.get(fileName);
         }
-        File file = new File(directoryPath + File.pathSeparator + fileName);
-
+//        File file = new File(directoryPath + File.pathSeparator + fileName);
+//        file.createNewFile();
         RandomAccessFile randomAccessFile = new RandomAccessFile(fileName, READ_WRITE_ACCESS);
         dataMap.put(fileName, randomAccessFile);
         return randomAccessFile;

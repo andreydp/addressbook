@@ -10,19 +10,13 @@ public class StreetCSVDAOImpl extends AbstractCSVDAO<Street>
 {
     public StreetCSVDAOImpl(final FileDataProvider fileDataProvider)
     {
-
-        super(fileDataProvider, "street.csv",
-
-                "id;streetName");
-
+        super(fileDataProvider, "street.csv", "id;streetName");
     }
 
     @Override
     protected Street parseEntity(final String str)
     {
-
         String[] arr = str.split(";");
-
         return new Street(Long.parseLong(arr[0]), arr[1]);
     }
 
@@ -30,7 +24,6 @@ public class StreetCSVDAOImpl extends AbstractCSVDAO<Street>
 
     public String viewEntity(final Street street)
     {
-
         return String.format("%d;%s", street.getId(), street.getStreetName());
     }
 }

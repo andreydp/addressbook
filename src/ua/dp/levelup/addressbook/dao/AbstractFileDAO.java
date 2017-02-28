@@ -2,7 +2,7 @@ package ua.dp.levelup.addressbook.dao;
 
 import ua.dp.levelup.addressbook.dao.impl.FileDataProvider;
 
-import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.RandomAccessFile;
 
 /**
@@ -26,9 +26,19 @@ public abstract class AbstractFileDAO<T> implements DAO<T>
         fileDataProvider.appendFile(fileName);
     }
 
-    public RandomAccessFile getDataFile() throws FileNotFoundException
+    public RandomAccessFile getDataFile() throws IOException
     {
 
         return fileDataProvider.getDataFile(fileName);
+    }
+
+    public Long getId()
+    {
+        return id;
+    }
+
+    public String getFileName()
+    {
+        return fileName;
     }
 }

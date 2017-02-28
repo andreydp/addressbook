@@ -9,7 +9,7 @@ import java.util.ArrayList;
  */
 public interface DAO<T>
 {
-    void create(T t) throws FileNotFoundException;
+    void create(T t) throws IOException;
 
     ArrayList<T> read() throws IOException;
 

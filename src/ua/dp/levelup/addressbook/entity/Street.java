@@ -28,4 +28,13 @@ public class Street extends Entity
     {
         this.streetName = streetName;
     }
+
+    @Override
+    public String toString()
+    {
+        return "Street{" +
+                "ID='" + getId() + "', " +
+                "streetName='" + streetName + '\'' +
+                '}';
+    }
 }
