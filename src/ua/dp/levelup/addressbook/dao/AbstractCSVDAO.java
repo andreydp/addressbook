@@ -1,6 +1,5 @@
 package ua.dp.levelup.addressbook.dao;
 
-
 import ua.dp.levelup.addressbook.dao.impl.FileDataProvider;
 
 import java.io.IOException;
@@ -26,7 +25,7 @@ public abstract class AbstractCSVDAO<T> extends AbstractFileDAO<T>
         try
         {
             RandomAccessFile file = this.getDataFile();
-            if (file.length() == 0) file.writeBytes(this.HEADER_CSV);
+            if (file.length() == 0) file.writeBytes(HEADER_CSV);
             file.seek(file.length());
             file.writeBytes("\n");
             file.writeBytes(viewEntity(t));
@@ -39,11 +38,12 @@ public abstract class AbstractCSVDAO<T> extends AbstractFileDAO<T>
 
     public ArrayList<T> read()
     {
-        ArrayList<T> list = null;
+        ArrayList<T> list = new ArrayList<>();
+        RandomAccessFile file = null;
         try
         {
-            list = new ArrayList<>();
-            RandomAccessFile file = this.getDataFile();
+            file = getDataFile();
+            file.seek(0);
             for (String line; (line = file.readLine()) != null; )
             {
                 if (line.startsWith(this.HEADER_CSV)) continue;
@@ -62,9 +62,9 @@ public abstract class AbstractCSVDAO<T> extends AbstractFileDAO<T>
         return;
     }
 
-    public void delete(final T t)
+    public void delete(final T t) throws IOException
     {
-        return;
+        RandomAccessFile file = getDataFile();
     }
 
     public T getOneById(final long id)
@@ -76,9 +76,18 @@ public abstract class AbstractCSVDAO<T> extends AbstractFileDAO<T>
 
     protected abstract T parseEntity(final String str);
 
-    public int[] getStartAndEndOfStr(RandomAccessFile file, T t)
+    public int[] getStartAndEndOfStr(RandomAccessFile file, T t) throws IOException
     {
-        int[] result = null;
+        int[] result = new int[2];
+        String entityStr = viewEntity(t);
+        for (String line; (line = file.readLine()) != null; )
+        {
+            if (line.equals(entityStr))
+            {
+                result[0] = (int) file.getFilePointer() - line.length();
+                result[1] = (int) file.getFilePointer();
+            }
+        }
         return result;
     }
 }

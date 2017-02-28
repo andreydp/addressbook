@@ -11,24 +11,18 @@ import java.io.RandomAccessFile;
 public abstract class AbstractFileDAO<T> implements DAO<T>
 {
     private Long id;
-
     protected final FileDataProvider fileDataProvider;
-
     private String fileName;
 
     public AbstractFileDAO(FileDataProvider fileDataProvider, String fileName)
     {
-
         this.fileDataProvider = fileDataProvider;
-
         this.fileName = fileName;
-
         fileDataProvider.appendFile(fileName);
     }
 
     public RandomAccessFile getDataFile() throws IOException
     {
-
         return fileDataProvider.getDataFile(fileName);
     }
 
