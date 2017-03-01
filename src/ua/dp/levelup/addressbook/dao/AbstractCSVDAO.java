@@ -66,6 +66,25 @@ public abstract class AbstractCSVDAO<T extends Entity> extends AbstractFileDAO<T
     public void delete(final T t) throws IOException
     {
         RandomAccessFile file = getDataFile();
+        file.seek(HEADER_CSV.length());
+        for (String line; (line = file.readLine()) != null; )
+        {
+            long offset, length;
+            if (line.startsWith(t.getId().toString()))
+            {
+                long[] positions = getStartAndEndOfStr(file, t);
+                byte[] buffer = new byte[4096];
+                int read = -1; // will store byte reads from file.read()
+                while ((read = file.read(buffer)) > -1)
+                {//TODO: changeme
+                    file.seek(file.getFilePointer() - read - 0);
+                    file.write(buffer, 0, read);
+                    file.seek(file.getFilePointer() + 0);
+                }
+                file.setLength(file.length() - length); //truncate by length
+                break;
+            }
+        }
     }
 
     public T getOneById(final long id)
@@ -87,8 +106,8 @@ public abstract class AbstractCSVDAO<T extends Entity> extends AbstractFileDAO<T
             {
                 if (line.startsWith(t.getId() + ";"))
                 {
-                    result[0] =  file.getFilePointer() - line.length();
-                    result[1] =  file.getFilePointer();
+                    result[0] = file.getFilePointer() - line.length();
+                    result[1] = file.getFilePointer();
                     break;
                 }
             }
