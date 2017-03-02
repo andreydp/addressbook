@@ -13,6 +13,7 @@ import java.util.ArrayList;
 public abstract class AbstractCSVDAO<T extends Entity> extends AbstractFileDAO<T>
 {
     private final String HEADER_CSV;
+    private long maxId;
 
     protected AbstractCSVDAO(final FileDataProvider fileDataProvider, String fileName, final String HEADER_CSV)
     {
@@ -47,7 +48,7 @@ public abstract class AbstractCSVDAO<T extends Entity> extends AbstractFileDAO<T
             file.seek(0);
             for (String line; (line = file.readLine()) != null; )
             {
-                if (line.startsWith(this.HEADER_CSV)) continue;
+                if (line.startsWith(HEADER_CSV)) continue;
                 list.add(parseEntity(line));
             }
         } catch (IOException e)
@@ -58,38 +59,120 @@ public abstract class AbstractCSVDAO<T extends Entity> extends AbstractFileDAO<T
         return list;
     }
 
-    public void update(final T t)
+    public long getMaxId() throws IOException
     {
-        return;
+        if (maxId == 0)
+        {
+            RandomAccessFile file = getDataFile();
+            file.seek(HEADER_CSV.length() + 1);
+            for (String line; (line = file.readLine()) != null; )
+            {
+                long currentId = parseEntity(line).getId();
+                maxId = currentId > maxId ? currentId : maxId;
+            }
+        }
+        return maxId++;
     }
 
-    public void delete(final T t) throws IOException
+    public void update(final T t)
     {
-        RandomAccessFile file = getDataFile();
-        file.seek(HEADER_CSV.length());
-        for (String line; (line = file.readLine()) != null; )
+        try
         {
-            long offset, length;
-            if (line.startsWith(t.getId().toString()))
+            RandomAccessFile file = getDataFile();
+            file.seek(HEADER_CSV.length() + 1);
+            for (String line; (line = file.readLine()) != null; )
             {
-                long[] positions = getStartAndEndOfStr(file, t);
-                byte[] buffer = new byte[4096];
-                int read = -1; // will store byte reads from file.read()
-                while ((read = file.read(buffer)) > -1)
-                {//TODO: changeme
-                    file.seek(file.getFilePointer() - read - 0);
-                    file.write(buffer, 0, read);
-                    file.seek(file.getFilePointer() + 0);
+                if (line.startsWith(t.getId().toString() + ";"))
+                {
+                    StringBuilder sb = new StringBuilder();
+                    int length = line.length() + 1;
+                    String updatedLine = viewEntity(t);
+                    int offset = updatedLine.length() - line.length();
+                    sb.append(updatedLine).append("\n");
+                    long writePos = file.getFilePointer() - length;
+                    while ((line = file.readLine()) != null)
+                    {
+                        sb.append(line).append("\n");
+                    }
+                    file.seek(writePos);
+                    file.write(sb.toString().getBytes());
+                    if (offset < 0)
+                    {
+                        file.setLength(file.length() + offset);
+                    }
+                    break;
                 }
-                file.setLength(file.length() - length); //truncate by length
-                break;
             }
+        } catch (IOException e)
+        {
+            System.out.println("There was an error updating record in file!");
+            e.printStackTrace();
+        }
+    }
+
+    public void delete(final T t)
+    {
+        try
+        {
+            RandomAccessFile file = getDataFile();
+            file.seek(HEADER_CSV.length());
+            for (String line; (line = file.readLine()) != null; )
+            {
+
+                if (line.startsWith(t.getId().toString() + ";"))
+                {
+                    //                    byte[] buffer = new byte[4096];
+                    //                    long length = line.length() + 1;
+                    //                    int read;
+                    //                    while ((read = file.read(buffer)) > -1)
+                    //                    {
+                    //                        file.seek(file.getFilePointer() - read - length);
+                    //                        file.write(buffer, 0, read);
+                    //                        file.seek(file.getFilePointer() + length);
+                    //                    }
+                    //                    file.setLength(file.length() - length);
+                    //                    break;
+
+                    StringBuilder sb = new StringBuilder();
+                    int length = line.length() + 1;
+                    long writePos = file.getFilePointer() - length;
+                    while ((line = file.readLine()) != null)
+                    {
+                        sb.append(line + "\n");
+                    }
+                    file.seek(writePos);
+                    file.write(sb.toString().getBytes());
+                    file.setLength(file.length() - length);
+                    break;
+                }
+            }
+
+        } catch (IOException e)
+        {
+            System.out.printf("There was an error deleting from cxv file!");
+            e.printStackTrace();
         }
     }
 
     public T getOneById(final long id)
     {
-        return null;
+        T entity = null;
+        try
+        {
+            RandomAccessFile file = getDataFile();
+            file.seek(HEADER_CSV.length() + 1);
+            for (String line; (line = file.readLine()) != null; )
+            {
+                if (line.startsWith(id + ";"))
+                {
+                    entity = parseEntity(line);
+                }
+            }
+        } catch (IOException e)
+        {
+            e.printStackTrace();
+        }
+        return entity;
     }
 
     public abstract String viewEntity(T t);

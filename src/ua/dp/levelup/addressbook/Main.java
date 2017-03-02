@@ -19,9 +19,12 @@ public class Main
         StreetCSVDAOImpl streetCSVDAO = new StreetCSVDAOImpl(fileDataProvider);
         fileDataProvider.openConnection();
         System.out.println(streetCSVDAO.read());
-        Street gagarina = new Street(1L, "Gagarina");
+        Street gagarina = new Street(1L, "gag");
         Street krasnaya = new Street(2L, "Krasnaya");
-        streetCSVDAO.delete(gagarina);
-        System.out.println(streetCSVDAO.read());
+        Street minina = new Street(3L, "Minina");
+
+//        streetCSVDAO.update(gagarina);
+        System.out.println(streetCSVDAO.getMaxId());
+        System.out.println(streetCSVDAO.getMaxId());
     }
 }
