@@ -1,6 +1,6 @@
 package ua.dp.levelup.addressbook.dao;
 
-import ua.dp.levelup.addressbook.dao.impl.FileDataProvider;
+import ua.dp.levelup.addressbook.dao.impl.FileDataProviderImpl;
 
 import java.io.IOException;
 import java.io.RandomAccessFile;
@@ -11,14 +11,14 @@ import java.io.RandomAccessFile;
 public abstract class AbstractFileDAO<T> implements DAO<T>
 {
     private Long id;
-    protected final FileDataProvider fileDataProvider;
+    protected final FileDataProviderImpl fileDataProvider;
     private String fileName;
 
-    public AbstractFileDAO(FileDataProvider fileDataProvider, String fileName)
+    public AbstractFileDAO(DataProvider fileDataProvider, String fileName)
     {
-        this.fileDataProvider = fileDataProvider;
+        this.fileDataProvider = (FileDataProviderImpl) fileDataProvider;
         this.fileName = fileName;
-        fileDataProvider.appendFile(fileName);
+        this.fileDataProvider.appendFile(fileName);
     }
 
     public RandomAccessFile getDataFile() throws IOException
@@ -26,13 +26,16 @@ public abstract class AbstractFileDAO<T> implements DAO<T>
         return fileDataProvider.getDataFile(fileName);
     }
 
-    public Long getId()
-    {
-        return id;
-    }
-
     public String getFileName()
     {
         return fileName;
     }
+
+    protected long getNextId()
+    {
+        if (null == id) id = initMaxId();
+        return ++id;
+    }
+
+    protected abstract long initMaxId();
 }

@@ -1,12 +1,12 @@
 package ua.dp.levelup.addressbook.view.impl;
 
+import ua.dp.levelup.addressbook.dao.DAO;
 import ua.dp.levelup.addressbook.entity.Citizen;
 import ua.dp.levelup.addressbook.view.Action;
 import ua.dp.levelup.addressbook.view.CitizenTableModelContainer;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.List;
 
 /**
  * Created by java on 10.01.2017.
@@ -17,11 +17,13 @@ public class CitizenTablePanel extends JPanel implements Action
     private final JTable table;
     private final CreateCitizenDialog dialog = new CreateCitizenDialog();
     private final CitizenTableModelContainer tableContainer;
+    private final DAO<Citizen> citizenDAO;
 
-    public CitizenTablePanel()
+    public CitizenTablePanel(DAO<Citizen> citizenDAO)
     {
         this.tableContainer = new CitizenTableModelContainer();
         this.table = new JTable(tableContainer);
+        this.citizenDAO = citizenDAO;
         setName("Citizen Tab");
         init();
     }
@@ -40,21 +42,25 @@ public class CitizenTablePanel extends JPanel implements Action
         dialog.setVisible(true);
         if (dialog.isOkPressed())
         {
-            tableContainer.getData().add(dialog.getEntity());
+            Citizen citizen = dialog.getEntity();
+            tableContainer.getData().add(citizen);
+            citizenDAO.create(citizen);
             table.updateUI();
         }
     }
 
     @Override
-    public List<Citizen> read()
+    public void read()
     {
-        return tableContainer.getData();
+        tableContainer.setData(citizenDAO.read());
+        table.updateUI();
     }
 
     @Override
     public void update()
     {
-
+        Citizen citizen = tableContainer.getSelectedRowData(table.getSelectedRow());
+        citizenDAO.update(citizen);
     }
 
     @Override
@@ -62,6 +68,7 @@ public class CitizenTablePanel extends JPanel implements Action
     {
         Citizen citizen = tableContainer.getSelectedRowData(table.getSelectedRow());
         tableContainer.getData().remove(citizen);
+        citizenDAO.delete(citizen);
         table.updateUI();
     }
 }

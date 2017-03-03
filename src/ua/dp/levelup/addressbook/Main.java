@@ -1,8 +1,9 @@
 package ua.dp.levelup.addressbook;
 
-import ua.dp.levelup.addressbook.dao.impl.FileDataProvider;
+import ua.dp.levelup.addressbook.dao.impl.FileDataProviderImpl;
 import ua.dp.levelup.addressbook.dao.impl.StreetCSVDAOImpl;
 import ua.dp.levelup.addressbook.entity.Street;
+import ua.dp.levelup.addressbook.view.MyDataTableFrame;
 
 import java.io.IOException;
 
@@ -14,15 +15,6 @@ public class Main
 
     public static void main(String[] args) throws IOException
     {
-//        new MyDataTableFrame();
-        FileDataProvider fileDataProvider = new FileDataProvider("");
-        StreetCSVDAOImpl streetCSVDAO = new StreetCSVDAOImpl(fileDataProvider);
-        fileDataProvider.openConnection();
-        System.out.println(streetCSVDAO.read());
-        Street gagarina = new Street(1L, "gag");
-        Street krasnaya = new Street(2L, "Krasnaya");
-        Street minina = new Street(3L, "Minina");
-
-        streetCSVDAO.update(gagarina);
+        new MyDataTableFrame();
     }
 }

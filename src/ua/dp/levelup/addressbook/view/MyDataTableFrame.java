@@ -1,5 +1,11 @@
 package ua.dp.levelup.addressbook.view;
 
+import ua.dp.levelup.addressbook.dao.DAO;
+import ua.dp.levelup.addressbook.dao.DataProvider;
+import ua.dp.levelup.addressbook.dao.impl.CitizenCSVDAOImpl;
+import ua.dp.levelup.addressbook.dao.impl.CitizenJSONDAOImpl;
+import ua.dp.levelup.addressbook.dao.impl.FileDataProviderImpl;
+import ua.dp.levelup.addressbook.entity.Citizen;
 import ua.dp.levelup.addressbook.view.impl.CitizenTablePanel;
 
 import javax.swing.*;
@@ -22,11 +28,14 @@ public class MyDataTableFrame extends JFrame
 
         TabbedPane tabbedPane = new TabbedPane();
 
-        CitizenTablePanel citizenTablePanel = new CitizenTablePanel();
+        DataProvider provider = new FileDataProviderImpl();
+        DAO<Citizen> citizenDAO = new CitizenJSONDAOImpl(provider, "citizen.json");
+
+        CitizenTablePanel citizenTablePanel = new CitizenTablePanel(citizenDAO);
         tabbedPane.add(citizenTablePanel);
 
         container.add(tabbedPane, BorderLayout.CENTER);
-        container.add(new ToolPanel(tabbedPane), BorderLayout.PAGE_END);
+        container.add(new ToolPanel(tabbedPane, provider), BorderLayout.PAGE_END);
 
         setBounds(0, 0, 800, 600);
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);

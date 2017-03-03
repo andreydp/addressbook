@@ -1,5 +1,7 @@
 package ua.dp.levelup.addressbook.view;
 
+import ua.dp.levelup.addressbook.dao.DataProvider;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionListener;
@@ -17,10 +19,12 @@ public class ToolPanel extends JPanel
     private static final int BTN_X_STEP = 100;
     private final TabbedPane workingPanel;
     private JComboBox<String> connectionType = new JComboBox<>();
+    private final DataProvider provider;
 
-    public ToolPanel(TabbedPane workingPanel)
+    public ToolPanel(TabbedPane workingPanel, DataProvider provider)
     {
         this.workingPanel = workingPanel;
+        this.provider = provider;
         initLayout();
     }
 
@@ -48,7 +52,7 @@ public class ToolPanel extends JPanel
 
     private void addConnectionTypeList(JComboBox<String> connectionType)
     {
-        String[] resources = {"H2", "XML", "CSV"};
+        String[] resources = {"CSV", "H2", "XML"};
         for (String type : resources)
         {
             connectionType.addItem(type);
@@ -72,12 +76,21 @@ public class ToolPanel extends JPanel
 
     private ActionListener connectListener()
     {
-        return event -> System.out.println("Connected");
+        return event ->
+        {
+            provider.openConnection();
+            workingPanel.read();
+            System.out.println("Connected");
+        };
     }
 
     private ActionListener disconnectListener()
     {
-        return event -> System.out.println("Disconnected");
+        return event ->
+        {
+            provider.closeConnection();
+            System.out.println("Disconnected");
+        };
     }
 
     private void createActionButtons()

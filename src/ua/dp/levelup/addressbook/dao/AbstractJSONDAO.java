@@ -1,6 +1,5 @@
 package ua.dp.levelup.addressbook.dao;
 
-import ua.dp.levelup.addressbook.dao.impl.FileDataProviderImpl;
 import ua.dp.levelup.addressbook.entity.Entity;
 
 import java.io.IOException;
@@ -12,16 +11,18 @@ import java.util.logging.Logger;
 /**
  * Created by java on 28.02.2017.
  */
-public abstract class AbstractCSVDAO<T extends Entity> extends AbstractFileDAO<T>
+public abstract class AbstractJSONDAO<T extends Entity> extends AbstractFileDAO<T>
 {
-    private static final Logger LOG = Logger.getLogger(AbstractCSVDAO.class.getName());
+    private static final Logger LOG = Logger.getLogger(AbstractJSONDAO.class.getName());
 
-    private final String HEADER_CSV;
+    private final String HEADER_JSON;
+    private final String FOOTER_JSON = "]}";
 
-    public AbstractCSVDAO(DataProvider fileDataProvider, String fileName, String header_csv)
+    public AbstractJSONDAO(DataProvider fileDataProvider,
+                           String fileName, String header)
     {
         super(fileDataProvider, fileName);
-        HEADER_CSV = header_csv;
+        HEADER_JSON = header;
     }
 
     protected abstract T parseEntity(final String str);
@@ -38,15 +39,18 @@ public abstract class AbstractCSVDAO<T extends Entity> extends AbstractFileDAO<T
             {
                 t.setId(getNextId());
             }
-            if (file.length() < (HEADER_CSV.length()))
+            if (file.length() == 0)
             {
-                file.write((HEADER_CSV + "\n").getBytes());
+                file.write((HEADER_JSON + "\r\n").getBytes());
+                file.write((viewEntity(t) + "\r\n").getBytes());
+                file.write(FOOTER_JSON.getBytes());
             } else
             {
-                file.seek(file.length());
-//                file.write("\n".getBytes());
+                file.seek(file.length() - ("\r\n" + FOOTER_JSON).length());
+                file.write(",\r\n".getBytes());
+                file.write((viewEntity(t) + "\r\n").getBytes());
+                file.write(FOOTER_JSON.getBytes());
             }
-            file.write(viewEntity(t).getBytes());
         } catch (IOException ex)
         {
             LOG.log(Level.INFO, "create entity error", ex);
@@ -63,7 +67,7 @@ public abstract class AbstractCSVDAO<T extends Entity> extends AbstractFileDAO<T
             file.seek(0);
             String str;
 
-            int position = HEADER_CSV.length() + 1;
+            int position = HEADER_JSON.length() + 1;
             file.seek(position);
             // read lines till the end of the stream
             while ((str = file.readLine()) != null)
