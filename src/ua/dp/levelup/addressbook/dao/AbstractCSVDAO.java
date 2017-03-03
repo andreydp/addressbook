@@ -138,7 +138,7 @@ public abstract class AbstractCSVDAO<T extends Entity> extends AbstractFileDAO<T
                     long writePos = file.getFilePointer() - length;
                     while ((line = file.readLine()) != null)
                     {
-                        sb.append(line + "\n");
+                        sb.append(line).append("\n");
                     }
                     file.seek(writePos);
                     file.write(sb.toString().getBytes());
@@ -156,7 +156,6 @@ public abstract class AbstractCSVDAO<T extends Entity> extends AbstractFileDAO<T
 
     public T getOneById(final long id)
     {
-        T entity = null;
         try
         {
             RandomAccessFile file = getDataFile();
@@ -165,14 +164,14 @@ public abstract class AbstractCSVDAO<T extends Entity> extends AbstractFileDAO<T
             {
                 if (line.startsWith(id + ";"))
                 {
-                    entity = parseEntity(line);
+                    return parseEntity(line);
                 }
             }
         } catch (IOException e)
         {
             e.printStackTrace();
         }
-        return entity;
+        return null;
     }
 
     public abstract String viewEntity(T t);

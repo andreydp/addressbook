@@ -23,8 +23,6 @@ public class Main
         Street krasnaya = new Street(2L, "Krasnaya");
         Street minina = new Street(3L, "Minina");
 
-//        streetCSVDAO.update(gagarina);
-        System.out.println(streetCSVDAO.getMaxId());
-        System.out.println(streetCSVDAO.getMaxId());
+        streetCSVDAO.update(gagarina);
     }
 }
