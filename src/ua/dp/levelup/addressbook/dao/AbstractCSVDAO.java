@@ -71,7 +71,7 @@ public abstract class AbstractCSVDAO<T extends Entity> extends AbstractFileDAO<T
                 maxId = currentId > maxId ? currentId : maxId;
             }
         }
-        return maxId++;
+        return ++maxId;
     }
 
     public void update(final T t)
