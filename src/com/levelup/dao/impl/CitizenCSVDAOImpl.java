@@ -1,14 +1,15 @@
-package ua.dp.levelup.addressbook.dao.impl;
+package com.levelup.dao.impl;
 
-import ua.dp.levelup.addressbook.dao.AbstractCSVDAO;
-import ua.dp.levelup.addressbook.dao.DataProvider;
-import ua.dp.levelup.addressbook.entity.Citizen;
+import com.levelup.dao.AbstractCSVDAO;
+import com.levelup.dao.DataProvider;
+import com.levelup.entity.Citizen;
 
 /**
  * Created by java on 28.02.2017.
  */
 public class CitizenCSVDAOImpl extends AbstractCSVDAO<Citizen>
 {
+
     public CitizenCSVDAOImpl(DataProvider fileDataProvider, String fileName)
     {
         super(fileDataProvider, fileName, "id;fName;lName;age;street_id");
@@ -38,4 +39,5 @@ public class CitizenCSVDAOImpl extends AbstractCSVDAO<Citizen>
                 + entity.getStreetId()
                 + "\r\n";
     }
+
 }

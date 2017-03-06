@@ -1,7 +1,7 @@
-package ua.dp.levelup.addressbook.dao;
+package com.levelup.dao;
 
-import ua.dp.levelup.addressbook.dao.impl.FileDataProviderImpl;
-import ua.dp.levelup.addressbook.entity.Entity;
+import com.levelup.dao.impl.FileDataProviderImpl;
+import com.levelup.entity.Entity;
 
 import java.io.IOException;
 import java.io.RandomAccessFile;
@@ -12,14 +12,13 @@ import java.util.logging.Logger;
 /**
  * Created by java on 28.02.2017.
  */
-public abstract class AbstractCSVDAO<T extends Entity> extends AbstractFileDAO<T>
-{
+public abstract class AbstractCSVDAO<T extends Entity> extends AbstractFileDAO<T> {
+
     private static final Logger LOG = Logger.getLogger(AbstractCSVDAO.class.getName());
 
     private final String HEADER_CSV;
 
-    public AbstractCSVDAO(DataProvider fileDataProvider, String fileName, String header_csv)
-    {
+    public AbstractCSVDAO(DataProvider fileDataProvider, String fileName, String header_csv) {
         super(fileDataProvider, fileName);
         HEADER_CSV = header_csv;
     }
@@ -29,36 +28,27 @@ public abstract class AbstractCSVDAO<T extends Entity> extends AbstractFileDAO<T
     public abstract String viewEntity(T entity);
 
     @Override
-    public void create(final T t)
-    {
-        try
-        {
+    public void create(final T t) {
+        try {
             RandomAccessFile file = getDataFile();
-            if ((t.getId() == null) || (t.getId() == 0L))
-            {
+            if ((t.getId() == null) || (t.getId() == 0L)) {
                 t.setId(getNextId());
             }
-            if (file.length() < (HEADER_CSV.length()))
-            {
-                file.write((HEADER_CSV + "\n").getBytes());
-            } else
-            {
+            if (file.length() < (HEADER_CSV.length())) {
+                file.write((HEADER_CSV + "\r\n").getBytes());
+            } else {
                 file.seek(file.length());
-//                file.write("\n".getBytes());
             }
             file.write(viewEntity(t).getBytes());
-        } catch (IOException ex)
-        {
+        } catch (IOException ex) {
             LOG.log(Level.INFO, "create entity error", ex);
         }
     }
 
     @Override
-    public ArrayList<T> read()
-    {
-        ArrayList<T> result = new ArrayList<>();
-        try
-        {
+    public ArrayList<T> read() {
+        ArrayList<T> result = new ArrayList();
+        try {
             RandomAccessFile file = getDataFile();
             file.seek(0);
             String str;
@@ -66,22 +56,18 @@ public abstract class AbstractCSVDAO<T extends Entity> extends AbstractFileDAO<T
             int position = HEADER_CSV.length() + 1;
             file.seek(position);
             // read lines till the end of the stream
-            while ((str = file.readLine()) != null)
-            {
+            while ((str = file.readLine()) != null) {
                 result.add(parseEntity(str));
             }
-        } catch (IOException e)
-        {
+        } catch (IOException e) {
             System.out.println("Error get info from file JSON (Street)");
         }
         return result;
     }
 
     @Override
-    public void update(final T t)
-    {
-        try
-        {
+    public void update(final T t) {
+        try {
             RandomAccessFile file = getDataFile();
             String buffer = "";
             file.seek(0);
@@ -90,8 +76,7 @@ public abstract class AbstractCSVDAO<T extends Entity> extends AbstractFileDAO<T
             int start = startAndEndOfStr[0];
             int end = startAndEndOfStr[1];
             file.seek(end);
-            while ((str = file.readLine()) != null)
-            {
+            while ((str = file.readLine()) != null) {
                 buffer += str + "\n";
             }
             file.seek(start);
@@ -100,17 +85,14 @@ public abstract class AbstractCSVDAO<T extends Entity> extends AbstractFileDAO<T
             file.write(s.getBytes());
             file.write(buffer.getBytes());
             file.setLength(start + s.length() + buffer.length() - 1);
-        } catch (IOException e)
-        {
+        } catch (IOException e) {
             System.out.println("Error get info from file JSON (Street)");
         }
     }
 
     @Override
-    public void delete(final T t)
-    {
-        try
-        {
+    public void delete(final T t) {
+        try {
             RandomAccessFile file = getDataFile();
             String buffer = "";
             file.seek(0);
@@ -119,88 +101,70 @@ public abstract class AbstractCSVDAO<T extends Entity> extends AbstractFileDAO<T
             int start = startAndEndOfStr[0];
             int end = startAndEndOfStr[1];
             file.seek(end);
-            while ((str = file.readLine()) != null)
-            {
+            while ((str = file.readLine()) != null) {
                 buffer += str + "\n";
             }
             file.seek(start);
             file.write(buffer.getBytes());
             file.setLength(start + buffer.length() - 1);
-        } catch (IOException e)
-        {
+        } catch (IOException e) {
             System.out.println("Error get info from file JSON (Street)");
         }
     }
 
     @Override
-    public T getOneById(final long id)
-    {
+    public T getOneById(final long id) {
         T t = null;
         String str;
-        try
-        {
+        try {
             RandomAccessFile file = getDataFile();
-            while ((str = file.readLine()) != null)
-            {
-                if (str.contains("" + id))
-                {
+            while ((str = file.readLine()) != null) {
+                if (str.contains("" + id)) {
                     t = parseEntity(str);
                 }
             }
-        } catch (IOException e)
-        {
+        } catch (IOException e) {
             e.printStackTrace();
         }
         return t;
     }
 
     @Override
-    protected long initMaxId()
-    {
+    protected long initMaxId() {
         long maxId = 0;
-        try
-        {
+        try {
             RandomAccessFile file = getDataFile();
             file.seek(0);
             String str = "";
-            while ((str = file.readLine()) != null)
-            {
-                if (!str.contains("id"))
-                {
+            while ((str = file.readLine()) != null) {
+                if (!str.contains("id")) {
                     long id = Long.parseLong(str.split(";")[0]);
                     if (maxId < id) maxId = id;
                 }
             }
-        } catch (IOException e)
-        {
+        } catch (IOException e) {
             LOG.log(Level.INFO, "error during initialization id", e);
         }
         return maxId;
     }
 
-    public int[] getStartAndEndOfStr(RandomAccessFile file, T t) throws IOException
-    {
+    public int[] getStartAndEndOfStr(RandomAccessFile file, T t) throws IOException {
         int[] arr = new int[2];
         int start = 0;
         int end = 0;
         boolean found = false;
         String str = "";
-        while ((str = file.readLine()) != null && !found)
-        {
-            if (str.startsWith("" + t.getId() + ";"))
-            {
+        while ((str = file.readLine()) != null && !found) {
+            if (str.startsWith("" + t.getId() + ";")) {
                 found = true;
             }
-            if (!found)
-            {
+            if (!found) {
                 start += str.length() + 1;
                 arr[0] = start;
-            } else
-            {
+            } else {
                 end = start + str.length() + 1;
                 arr[1] = end;
             }
-        }
-        return arr;
+        } return arr;
     }
 }

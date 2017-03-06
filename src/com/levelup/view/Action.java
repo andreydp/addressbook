@@ -1,12 +1,11 @@
-package ua.dp.levelup.addressbook.view;
+package com.levelup.view;
 
 import java.util.List;
 
 /**
  * Created by java on 10.01.2017.
  */
-public interface Action
-{
+public interface Action {
 
     void create();
     void read();

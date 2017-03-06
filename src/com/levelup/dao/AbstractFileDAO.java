@@ -1,6 +1,6 @@
-package ua.dp.levelup.addressbook.dao;
+package com.levelup.dao;
 
-import ua.dp.levelup.addressbook.dao.impl.FileDataProviderImpl;
+import com.levelup.dao.impl.FileDataProviderImpl;
 
 import java.io.IOException;
 import java.io.RandomAccessFile;
@@ -10,6 +10,7 @@ import java.io.RandomAccessFile;
  */
 public abstract class AbstractFileDAO<T> implements DAO<T>
 {
+
     private Long id;
     protected final FileDataProviderImpl fileDataProvider;
     private String fileName;

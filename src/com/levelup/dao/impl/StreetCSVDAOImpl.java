@@ -1,13 +1,14 @@
-package ua.dp.levelup.addressbook.dao.impl;
+package com.levelup.dao.impl;
 
-import ua.dp.levelup.addressbook.dao.AbstractCSVDAO;
-import ua.dp.levelup.addressbook.entity.Street;
+import com.levelup.dao.AbstractCSVDAO;
+import com.levelup.entity.Street;
 
 /**
  * Created by java on 28.02.2017.
  */
 public class StreetCSVDAOImpl extends AbstractCSVDAO<Street>
 {
+
     public StreetCSVDAOImpl(FileDataProviderImpl fileDataProvider, String fileName)
     {
         super(fileDataProvider, fileName, "id;street_name");

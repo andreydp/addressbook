@@ -1,29 +1,26 @@
-package ua.dp.levelup.addressbook.view;
+package com.levelup.view;
 
-import ua.dp.levelup.addressbook.dao.DAO;
-import ua.dp.levelup.addressbook.dao.DataProvider;
-import ua.dp.levelup.addressbook.dao.impl.CitizenCSVDAOImpl;
-import ua.dp.levelup.addressbook.dao.impl.CitizenJSONDAOImpl;
-import ua.dp.levelup.addressbook.dao.impl.FileDataProviderImpl;
-import ua.dp.levelup.addressbook.entity.Citizen;
-import ua.dp.levelup.addressbook.view.impl.CitizenTablePanel;
+import com.levelup.dao.DAO;
+import com.levelup.dao.DataProvider;
+import com.levelup.dao.impl.CitizenCSVDAOImpl;
+import com.levelup.dao.impl.CitizenJSONDAOImpl;
+import com.levelup.dao.impl.FileDataProviderImpl;
+import com.levelup.entity.Citizen;
+import com.levelup.view.impl.CitizenTablePanel;
 
 import javax.swing.*;
 import java.awt.*;
 
 /**
- * Created by andrey on 12.01.2017.
+ * Created by Алексей on 12.01.2017.
  */
-public class MyDataTableFrame extends JFrame
-{
+public class MyDataTableFrame extends JFrame {
 
-    public MyDataTableFrame()
-    {
+    public MyDataTableFrame() {
         init();
     }
 
-    private void init()
-    {
+    public void init() {
         Container container = getContentPane();
 
         TabbedPane tabbedPane = new TabbedPane();
@@ -41,4 +38,6 @@ public class MyDataTableFrame extends JFrame
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         setVisible(true);
     }
+
+
 }
