@@ -28,7 +28,7 @@ public class StreetCSVDAOImpl extends AbstractCSVDAO<Street>
     @Override
     public String viewEntity(Street entity)
     {
-        return entity.getId() + ";" + entity.getStreetName() + "\r\n";
+        return entity.getId() + ";" + entity.getStreetName() + LINE_SEPARATOR;
     }
 
 }

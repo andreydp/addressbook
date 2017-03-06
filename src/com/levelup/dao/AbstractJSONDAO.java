@@ -41,14 +41,18 @@ public abstract class AbstractJSONDAO<T extends Entity> extends AbstractFileDAO<
             }
             if (file.length() == 0)
             {
-                file.write((HEADER_JSON + "\r\n").getBytes());
-                file.write((viewEntity(t) + "\r\n").getBytes());
+                file.write((HEADER_JSON + LINE_SEPARATOR).getBytes());
+                file.write((viewEntity(t) + LINE_SEPARATOR).getBytes());
                 file.write((FOOTER_JSON).getBytes());
             } else
             {
-                file.seek(file.length() - ("\r\n" + FOOTER_JSON).length());
-                file.write(",\r\n".getBytes());
-                file.write((viewEntity(t) + "\r\n").getBytes());
+                file.seek(file.length() - (LINE_SEPARATOR + FOOTER_JSON).length());
+                if (file.length() != 20) //Empty file with header and footer
+                {
+                    file.write(",".getBytes());
+                }
+                file.write(LINE_SEPARATOR.getBytes());
+                file.write((viewEntity(t) + LINE_SEPARATOR).getBytes());
                 file.write((FOOTER_JSON).getBytes());
             }
         } catch (IOException ex)
@@ -60,14 +64,14 @@ public abstract class AbstractJSONDAO<T extends Entity> extends AbstractFileDAO<
     @Override
     public ArrayList<T> read()
     {
-        ArrayList<T> result = new ArrayList();
+        ArrayList<T> result = new ArrayList<>();
         try
         {
             RandomAccessFile file = getDataFile();
             file.seek(0);
             String str;
 
-            int position = HEADER_JSON.length() + 1;
+            int position = HEADER_JSON.length() + LINE_SEPARATOR.length();
             file.seek(position);
             // read lines till the end of the stream
             while ((str = file.readLine()) != null && str.startsWith("\t{\"id\":"))
@@ -96,11 +100,11 @@ public abstract class AbstractJSONDAO<T extends Entity> extends AbstractFileDAO<
             file.seek(end);
             while ((str = file.readLine()) != null)
             {
-                buffer += str + "\n";
+                buffer += str + LINE_SEPARATOR;
             }
             file.seek(start);
             String s = viewEntity(t);
-            s += (end + 1) < file.length() ? "\n" : "\n";
+            s += (end + LINE_SEPARATOR.length() + FOOTER_JSON.length()) < file.length() ? "," + LINE_SEPARATOR : LINE_SEPARATOR;
             file.write(s.getBytes());
             file.write(buffer.getBytes());
             file.setLength(start + s.length() + buffer.length() - 1);
@@ -123,13 +127,25 @@ public abstract class AbstractJSONDAO<T extends Entity> extends AbstractFileDAO<
             int start = startAndEndOfStr[0];
             int end = startAndEndOfStr[1];
             file.seek(end);
+            int count = 0;
             while ((str = file.readLine()) != null)
             {
-                buffer += str + "\n";
+                if (str.startsWith(FOOTER_JSON) && count == 0)
+                {
+                    if (file.length() - (end - start) == (HEADER_JSON.length() + FOOTER_JSON.length() + "\t".length()))
+                    {
+                        file.setLength(0); // It was the last entry, clear the file
+                        return;
+                    }
+                    start = start - LINE_SEPARATOR.length() - ",".length();
+                    buffer += LINE_SEPARATOR;
+                }
+                buffer += str + LINE_SEPARATOR;
+                count++;
             }
             file.seek(start);
             file.write(buffer.getBytes());
-            file.setLength(start + buffer.length() - 1);
+            file.setLength(start + buffer.length() - LINE_SEPARATOR.length());
         } catch (IOException e)
         {
             System.out.println("Error get info from file JSON (Street)");
@@ -146,7 +162,7 @@ public abstract class AbstractJSONDAO<T extends Entity> extends AbstractFileDAO<
             RandomAccessFile file = getDataFile();
             while ((str = file.readLine()) != null)
             {
-                if (str.contains("" + id))
+                if (!str.equals(HEADER_JSON) && !str.equals(FOOTER_JSON))
                 {
                     t = parseEntity(str);
                 }
@@ -166,10 +182,10 @@ public abstract class AbstractJSONDAO<T extends Entity> extends AbstractFileDAO<
         {
             RandomAccessFile file = getDataFile();
             file.seek(0);
-            String str = "";
+            String str;
             while ((str = file.readLine()) != null)
             {
-                if (!str.startsWith("\t{\"id\":"))
+                if (!str.equals(HEADER_JSON) && !str.equals(FOOTER_JSON))
                 {
                     long id = parseEntity(str).getId();
                     if (maxId < id) maxId = id;
@@ -188,20 +204,23 @@ public abstract class AbstractJSONDAO<T extends Entity> extends AbstractFileDAO<
         int start = 0;
         int end = 0;
         boolean found = false;
-        String str = "";
+        String str;
         while ((str = file.readLine()) != null && !found)
         {
-            if (str.startsWith("" + t.getId() + ";"))
+            if (!str.equals(HEADER_JSON) && !str.equals(FOOTER_JSON))
             {
-                found = true;
+                if (t.getId().equals(parseEntity(str).getId()))
+                {
+                    found = true;
+                }
             }
             if (!found)
             {
-                start += str.length() + 1;
+                start += str.length() + LINE_SEPARATOR.length();
                 arr[0] = start;
             } else
             {
-                end = start + str.length() + 1;
+                end = start + str.length() + LINE_SEPARATOR.length();
                 arr[1] = end;
             }
         }

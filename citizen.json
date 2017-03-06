@@ -1,5 +1,5 @@
 {"citizenList": [
-	{"id": 1, "firstName": "John", "lastName": "Doe", "age": 24, "streetId": 1},
-	{"id": 2, "firstName": "Max", "lastName": "Payne", "age": 22, "streetId": 2},
-	{"id": 2, "firstName": "Andrey", "lastName": "Pol", "age": 123, "streetId": 1212}
+	{"id": 1, "firstName": "1", "lastName": "1", "age": 1, "streetId": 1},
+	{"id": 2, "firstName": "2232dd", "lastName": "2", "age": 2, "streetId": 0},
+	{"id": 3, "firstName": "Andrey", "lastName": "Poletaev", "age": 28, "streetId": 433}
 ]}

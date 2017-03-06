@@ -3,9 +3,11 @@ package com.levelup.dao;
 /**
  * Created by java on 24.02.2017.
  */
-public interface DataProvider {
+public interface DataProvider
+{
 
-    enum ConnectionType {
+    enum ConnectionType
+    {
         MYSQL, H2, MONGODB, CSV, JSON, XML
     }
 

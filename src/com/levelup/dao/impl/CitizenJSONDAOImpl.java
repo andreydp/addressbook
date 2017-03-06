@@ -19,11 +19,11 @@ public class CitizenJSONDAOImpl extends AbstractJSONDAO<Citizen>
     @Override
     protected Citizen parseEntity(String str)
     {
-        String citizen = "";
-        citizen = str.trim().replaceAll("[\"\\s:{}]|id|firstName|lastName|age|streetId", "");
-        if (citizen.endsWith(",")) citizen = citizen.substring(0, citizen.length() - 1);
+        String citizenStr;
+        citizenStr = str.trim().replaceAll("[\"\\s:{}]|id|firstName|lastName|age|streetId", "");
+        if (citizenStr.endsWith(",")) citizenStr = citizenStr.substring(0, citizenStr.length() - 1);
 
-        String[] params = citizen.split(",");
+        String[] params = citizenStr.split(",");
 
         long id = Long.parseLong(params[0]);
         String fName = params[1];
@@ -37,12 +37,6 @@ public class CitizenJSONDAOImpl extends AbstractJSONDAO<Citizen>
     @Override
     public String viewEntity(Citizen entity)
     {
-        return "\t{" +
-                "\"id\": " + entity.getId() + ", " +
-                "\"firstName\": \"" + entity.getFistName() + "\", " +
-                "\"lastName\": \"" + entity.getLastName() + "\", " +
-                "\"age\": " + entity.getAge() + ", " +
-                "\"streetId\": " + entity.getStreetId() +
-                "}";
+        return "\t{" + "\"id\": " + entity.getId() + ", " + "\"firstName\": \"" + entity.getFistName() + "\", " + "\"lastName\": \"" + entity.getLastName() + "\", " + "\"age\": " + entity.getAge() + ", " + "\"streetId\": " + entity.getStreetId() + "}";
     }
 }

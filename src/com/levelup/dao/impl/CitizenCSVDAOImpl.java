@@ -37,7 +37,7 @@ public class CitizenCSVDAOImpl extends AbstractCSVDAO<Citizen>
                 + entity.getLastName() + ";"
                 + entity.getAge() + ";"
                 + entity.getStreetId()
-                + "\r\n";
+                + LINE_SEPARATOR;
     }
 
 }

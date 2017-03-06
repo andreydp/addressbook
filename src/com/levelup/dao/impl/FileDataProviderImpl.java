@@ -45,9 +45,7 @@ public class FileDataProviderImpl implements DataProvider
             for (String fileName : files.toString().split(";"))
             {
 
-                String path = directoryPath == null || directoryPath.isEmpty()
-                        ? fileName
-                        : directoryPath + File.separator + fileName;
+                String path = directoryPath == null || directoryPath.isEmpty() ? fileName : directoryPath + File.separator + fileName;
 
                 File file = new File(path);
 

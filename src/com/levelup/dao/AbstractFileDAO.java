@@ -14,6 +14,7 @@ public abstract class AbstractFileDAO<T> implements DAO<T>
     private Long id;
     protected final FileDataProviderImpl fileDataProvider;
     private String fileName;
+    public static final String LINE_SEPARATOR = System.lineSeparator();
 
     public AbstractFileDAO(DataProvider fileDataProvider, String fileName)
     {
