@@ -5,7 +5,6 @@ package com.levelup.entity;
  */
 public class Citizen extends Entity
 {
-
     private String fistName;
     private String lastName;
     private int age;
@@ -17,6 +16,10 @@ public class Citizen extends Entity
         this.lastName = lastName;
         this.age = age;
         this.streetId = streetId;
+    }
+
+    public Citizen()
+    {
     }
 
     public Citizen(Long id, String fistName, String lastName, int age, Long streetId)

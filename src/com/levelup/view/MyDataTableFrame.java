@@ -9,6 +9,11 @@ import com.levelup.view.impl.CitizenTablePanel;
 
 import javax.swing.*;
 import java.awt.*;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.lang.reflect.Constructor;
+import java.util.Properties;
 
 /**
  * Created by Алексей on 12.01.2017.
@@ -16,19 +21,27 @@ import java.awt.*;
 public class MyDataTableFrame extends JFrame
 {
 
-    public MyDataTableFrame()
+    public MyDataTableFrame() throws Exception
     {
         init();
     }
 
-    public void init()
+    public void init() throws Exception
     {
+        Properties properties = new Properties();
+        properties.load(new FileInputStream("config.properties"));
+        String citizenDaoClass = properties.getProperty("citizen.dao");
+
+        Constructor<?> constructor = Class.forName(citizenDaoClass).getConstructor(DataProvider.class, String.class);
+
+
+
         Container container = getContentPane();
 
         TabbedPane tabbedPane = new TabbedPane();
 
         DataProvider provider = new FileDataProviderImpl();
-        DAO<Citizen> citizenDAO = new CitizenJSONDAOImpl(provider, "citizen.json");
+        DAO<Citizen> citizenDAO = (DAO<Citizen>)constructor.newInstance(provider, "citizen.xml");
 
         CitizenTablePanel citizenTablePanel = new CitizenTablePanel(citizenDAO);
         tabbedPane.add(citizenTablePanel);

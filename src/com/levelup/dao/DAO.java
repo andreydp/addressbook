@@ -1,5 +1,6 @@
 package com.levelup.dao;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 
 /**
@@ -7,7 +8,6 @@ import java.util.ArrayList;
  */
 public interface DAO<T>
 {
-
     void create(T t);
 
     ArrayList<T> read();

@@ -8,7 +8,7 @@ import com.levelup.view.MyDataTableFrame;
 public class Main
 {
 
-    public static void main(String[] args)
+    public static void main(String[] args) throws Exception
     {
         String citizen = "\t{\"id\": 1, \"firstName\": \"John\", \"lastName\": \"Doe\", \"age\": 46, \"streetId\": 21},";
 
