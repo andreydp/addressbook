@@ -3,21 +3,19 @@ package com.levelup.dao.impl;
 import com.levelup.dao.AbstractCSVDAO;
 import com.levelup.dao.DataProvider;
 import com.levelup.entity.Citizen;
+import com.levelup.entity.Street;
 
 /**
  * Created by java on 28.02.2017.
  */
-public class CitizenCSVDAOImpl extends AbstractCSVDAO<Citizen>
-{
+public class CitizenCSVDAOImpl extends AbstractCSVDAO<Citizen> {
 
-    public CitizenCSVDAOImpl(DataProvider fileDataProvider, String fileName)
-    {
+    public CitizenCSVDAOImpl(DataProvider fileDataProvider, String fileName) {
         super(fileDataProvider, fileName, "id;fName;lName;age;street_id");
     }
 
     @Override
-    protected Citizen parseEntity(String str)
-    {
+    protected Citizen parseEntity(String str) {
         String[] params = str.split(";");
 
         long id = Long.parseLong(params[0]);
@@ -30,14 +28,13 @@ public class CitizenCSVDAOImpl extends AbstractCSVDAO<Citizen>
     }
 
     @Override
-    public String viewEntity(Citizen entity)
-    {
+    public String viewEntity(Citizen entity) {
         return entity.getId() + ";"
                 + entity.getFistName() + ";"
                 + entity.getLastName() + ";"
                 + entity.getAge() + ";"
                 + entity.getStreetId()
-                + LINE_SEPARATOR;
+                + "\r\n";
     }
 
 }

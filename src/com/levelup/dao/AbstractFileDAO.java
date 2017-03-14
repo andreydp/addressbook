@@ -8,33 +8,27 @@ import java.io.RandomAccessFile;
 /**
  * Created by andrey on 27.02.17.
  */
-public abstract class AbstractFileDAO<T> implements DAO<T>
-{
+public abstract class AbstractFileDAO<T> implements DAO<T> {
 
     private Long id;
     protected final FileDataProviderImpl fileDataProvider;
     private String fileName;
-    public static final String LINE_SEPARATOR = System.lineSeparator();
 
-    public AbstractFileDAO(DataProvider fileDataProvider, String fileName)
-    {
+    public AbstractFileDAO(DataProvider fileDataProvider, String fileName) {
         this.fileDataProvider = (FileDataProviderImpl) fileDataProvider;
         this.fileName = fileName;
         this.fileDataProvider.appendFile(fileName);
     }
 
-    public RandomAccessFile getDataFile() throws IOException
-    {
+    public RandomAccessFile getDataFile() throws IOException {
         return fileDataProvider.getDataFile(fileName);
     }
 
-    public String getFileName()
-    {
+    public String getFileName() {
         return fileName;
     }
 
-    protected long getNextId()
-    {
+    protected long getNextId() {
         if (null == id) id = initMaxId();
         return ++id;
     }

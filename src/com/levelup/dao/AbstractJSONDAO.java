@@ -11,16 +11,14 @@ import java.util.logging.Logger;
 /**
  * Created by java on 28.02.2017.
  */
-public abstract class AbstractJSONDAO<T extends Entity> extends AbstractFileDAO<T>
-{
+public abstract class AbstractJSONDAO<T extends Entity> extends AbstractFileDAO<T> {
 
     private static final Logger LOG = Logger.getLogger(AbstractJSONDAO.class.getName());
 
     private final String HEADER_JSON;
     private final String FOOTER_JSON = "]}";
 
-    public AbstractJSONDAO(DataProvider fileDataProvider, String fileName, String header)
-    {
+    public AbstractJSONDAO(DataProvider fileDataProvider, String fileName, String header) {
         super(fileDataProvider, fileName);
         HEADER_JSON = header;
     }
@@ -30,66 +28,50 @@ public abstract class AbstractJSONDAO<T extends Entity> extends AbstractFileDAO<
     public abstract String viewEntity(T entity);
 
     @Override
-    public void create(final T t)
-    {
-        try
-        {
+    public void create(final T t) {
+        try {
             RandomAccessFile file = getDataFile();
-            if ((t.getId() == null) || (t.getId() == 0L))
-            {
+            if ((t.getId() == null) || (t.getId() == 0L)) {
                 t.setId(getNextId());
             }
-            if (file.length() == 0)
-            {
-                file.write((HEADER_JSON + LINE_SEPARATOR).getBytes());
-                file.write((viewEntity(t) + LINE_SEPARATOR).getBytes());
+            if (file.length() == 0) {
+                file.write((HEADER_JSON + "\r\n").getBytes());
+                file.write((viewEntity(t) + "\r\n").getBytes());
                 file.write((FOOTER_JSON).getBytes());
-            } else
-            {
-                file.seek(file.length() - (LINE_SEPARATOR + FOOTER_JSON).length());
-                if (file.length() != 20) //Empty file with header and footer
-                {
-                    file.write(",".getBytes());
-                }
-                file.write(LINE_SEPARATOR.getBytes());
-                file.write((viewEntity(t) + LINE_SEPARATOR).getBytes());
+            } else {
+                file.seek(file.length() - ("\r\n" + FOOTER_JSON).length());
+                file.write(",\r\n".getBytes());
+                file.write((viewEntity(t) + "\r\n").getBytes());
                 file.write((FOOTER_JSON).getBytes());
             }
-        } catch (IOException ex)
-        {
+        } catch (IOException ex) {
             LOG.log(Level.INFO, "create entity error", ex);
         }
     }
 
     @Override
-    public ArrayList<T> read()
-    {
-        ArrayList<T> result = new ArrayList<>();
-        try
-        {
+    public ArrayList<T> read() {
+        ArrayList<T> result = new ArrayList();
+        try {
             RandomAccessFile file = getDataFile();
             file.seek(0);
             String str;
 
-            int position = HEADER_JSON.length() + LINE_SEPARATOR.length();
+            int position = HEADER_JSON.length() + 1;
             file.seek(position);
             // read lines till the end of the stream
-            while ((str = file.readLine()) != null && str.startsWith("\t{\"id\":"))
-            {
+            while ((str = file.readLine()) != null) {
                 result.add(parseEntity(str));
             }
-        } catch (IOException e)
-        {
+        } catch (IOException e) {
             System.out.println("Error get info from file JSON (Street)");
         }
         return result;
     }
 
     @Override
-    public void update(final T t)
-    {
-        try
-        {
+    public void update(final T t) {
+        try {
             RandomAccessFile file = getDataFile();
             String buffer = "";
             file.seek(0);
@@ -98,27 +80,23 @@ public abstract class AbstractJSONDAO<T extends Entity> extends AbstractFileDAO<
             int start = startAndEndOfStr[0];
             int end = startAndEndOfStr[1];
             file.seek(end);
-            while ((str = file.readLine()) != null)
-            {
-                buffer += str + LINE_SEPARATOR;
+            while ((str = file.readLine()) != null) {
+                buffer += str + "\n";
             }
             file.seek(start);
             String s = viewEntity(t);
-            s += (end + LINE_SEPARATOR.length() + FOOTER_JSON.length()) < file.length() ? "," + LINE_SEPARATOR : LINE_SEPARATOR;
+            s += (end + 1) < file.length() ? "\n" : "\n";
             file.write(s.getBytes());
             file.write(buffer.getBytes());
             file.setLength(start + s.length() + buffer.length() - 1);
-        } catch (IOException e)
-        {
+        } catch (IOException e) {
             System.out.println("Error get info from file JSON (Street)");
         }
     }
 
     @Override
-    public void delete(final T t)
-    {
-        try
-        {
+    public void delete(final T t) {
+        try {
             RandomAccessFile file = getDataFile();
             String buffer = "";
             file.seek(0);
@@ -127,103 +105,70 @@ public abstract class AbstractJSONDAO<T extends Entity> extends AbstractFileDAO<
             int start = startAndEndOfStr[0];
             int end = startAndEndOfStr[1];
             file.seek(end);
-            int count = 0;
-            while ((str = file.readLine()) != null)
-            {
-                if (str.startsWith(FOOTER_JSON) && count == 0)
-                {
-                    if (file.length() - (end - start) == (HEADER_JSON.length() + FOOTER_JSON.length() + "\t".length()))
-                    {
-                        file.setLength(0); // It was the last entry, clear the file
-                        return;
-                    }
-                    start = start - LINE_SEPARATOR.length() - ",".length();
-                    buffer += LINE_SEPARATOR;
-                }
-                buffer += str + LINE_SEPARATOR;
-                count++;
+            while ((str = file.readLine()) != null) {
+                buffer += str + "\n";
             }
             file.seek(start);
             file.write(buffer.getBytes());
-            file.setLength(start + buffer.length() - LINE_SEPARATOR.length());
-        } catch (IOException e)
-        {
+            file.setLength(start + buffer.length() - 1);
+        } catch (IOException e) {
             System.out.println("Error get info from file JSON (Street)");
         }
     }
 
     @Override
-    public T getOneById(final long id)
-    {
+    public T getOneById(final long id) {
         T t = null;
         String str;
-        try
-        {
+        try {
             RandomAccessFile file = getDataFile();
-            while ((str = file.readLine()) != null)
-            {
-                if (!str.equals(HEADER_JSON) && !str.equals(FOOTER_JSON))
-                {
+            while ((str = file.readLine()) != null) {
+                if (str.contains("" + id)) {
                     t = parseEntity(str);
                 }
             }
-        } catch (IOException e)
-        {
+        } catch (IOException e) {
             e.printStackTrace();
         }
         return t;
     }
 
     @Override
-    protected long initMaxId()
-    {
+    protected long initMaxId() {
         long maxId = 0;
-        try
-        {
+        try {
             RandomAccessFile file = getDataFile();
             file.seek(0);
-            String str;
-            while ((str = file.readLine()) != null)
-            {
-                if (!str.equals(HEADER_JSON) && !str.equals(FOOTER_JSON))
-                {
-                    long id = parseEntity(str).getId();
+            String str = "";
+            while ((str = file.readLine()) != null) {
+                if (!str.contains("id")) {
+                    long id = Long.parseLong(str.split(";")[0]);
                     if (maxId < id) maxId = id;
                 }
             }
-        } catch (IOException e)
-        {
+        } catch (IOException e) {
             LOG.log(Level.INFO, "error during initialization id", e);
         }
         return maxId;
     }
 
-    public int[] getStartAndEndOfStr(RandomAccessFile file, T t) throws IOException
-    {
+    public int[] getStartAndEndOfStr(RandomAccessFile file, T t) throws IOException {
         int[] arr = new int[2];
         int start = 0;
         int end = 0;
         boolean found = false;
-        String str;
-        while ((str = file.readLine()) != null && !found)
-        {
-            if (!str.equals(HEADER_JSON) && !str.equals(FOOTER_JSON))
-            {
-                if (t.getId().equals(parseEntity(str).getId()))
-                {
-                    found = true;
-                }
+        String str = "";
+        while ((str = file.readLine()) != null && !found) {
+            if (str.startsWith("" + t.getId() + ";")) {
+                found = true;
             }
-            if (!found)
-            {
-                start += str.length() + LINE_SEPARATOR.length();
+            if (!found) {
+                start += str.length() + 1;
                 arr[0] = start;
-            } else
-            {
-                end = start + str.length() + LINE_SEPARATOR.length();
+            } else {
+                end = start + str.length() + 1;
                 arr[1] = end;
             }
-        }
-        return arr;
+        } return arr;
     }
 }

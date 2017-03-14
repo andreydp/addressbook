@@ -5,8 +5,7 @@ import java.util.ArrayList;
 /**
  * Created by andrey on 27.02.17.
  */
-public interface DAO<T>
-{
+public interface DAO<T> {
 
     void create(T t);
 
